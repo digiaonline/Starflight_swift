@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'Starflight_swift_Example' do
+  pod 'Starflight_swift', :path => '../'
+
+  target 'Starflight_swift_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
