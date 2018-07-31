@@ -1,0 +1,16 @@
+PODS:
+  - Starflight_swift (0.1.0)
+
+DEPENDENCIES:
+  - Starflight_swift (from `../`)
+
+EXTERNAL SOURCES:
+  Starflight_swift:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Starflight_swift: fbecd4757461eb009e768335860c82f454142cac
+
+PODFILE CHECKSUM: a334d821c4b6973ae1fd17beff6469a7b17b4d86
+
+COCOAPODS: 1.5.3
