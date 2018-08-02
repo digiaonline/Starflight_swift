@@ -7,40 +7,167 @@
 //
 
 import UIKit
+import UserNotifications
+import Starflight_swift
+
+struct PushNotificationConstants {
+    static let starFlightClientID = "YOUR_STARFLIGHT_CLIENT_APP_ID" //"85"
+    static let starFlightClientSecret = "YOUR_STARFLIGHT_CLIENT_SECRET"//"50ebac70-5926-4066-bdea-2763b1509010"
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        configurePushNotification(launchOptions: launchOptions)
+
+        registerForPushNotification(application: application)
+
         return true
     }
 
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+
+        print(application.applicationState.rawValue)
+
+        if application.applicationState == .background {
+            pushNotificationReceived(userInfo, markAsRead: true)
+        } else if application.applicationState == .active {
+            pushNotificationReceived(userInfo, markAsRead: true)
+        }
+        else {
+            pushNotificationHandler(notification: userInfo)
+            pushNotificationReceived(userInfo, markAsRead: true)
+        }
     }
 
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+
+        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+
+        saveDeviceToken(deviceTokenString)
+
+        print(self.deviceToken)
+
+        let time = StarflightTimePreference(timeZone: "Europe/Helsinki",
+                                            monday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00"),
+                                            tuesday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00"),
+                                            wednesday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00"),
+                                            thursday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00"),
+                                            friday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00"),
+                                            saturday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00"),
+                                            sunday: StarflightTimePreference.DailyActiveTime(startHour: "01", startMinute: "00", endHour: "23", endMinute: "00")
+        )
+
+
+
+        let pushClient =  StarflightClient(appId: PushNotificationConstants.starFlightClientID,
+                                           clientSecret: PushNotificationConstants.starFlightClientSecret)
+
+        // if no tag and time preferences the pass 'nil' instead
+        pushClient.registerWithToken(token: self.deviceToken,
+                                     clientUUID: (clientUUID != "" ? clientUUID : nil),
+                                     tags: ["tag1", "tag2"],
+                                     timePreferences: time.timePrefJson()) { [unowned self] (responseDict, response, error) in
+                                        print("Starflight http response Code: \(String(describing: response?.statusCode))")
+
+                                        if error != nil {
+                                            // TODO: handle error here
+                                        }
+                                        self.handleClientUUIDNotification(responseDictionary: responseDict)
+        }
+
     }
 
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register:", error)
     }
 
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    //MARK: - Push Notification Configutation
+
+    func configurePushNotification(launchOptions: [UIApplicationLaunchOptionsKey: Any]?){
+        //configuring the push notification
+        if let notification = launchOptions?[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
+            pushNotificationHandler(notification: notification)
+            pushNotificationReceived(notification, markAsRead: true)
+        }
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    func registerForPushNotification(application: UIApplication){
+
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
+                DispatchQueue.main.async {
+                    application.registerForRemoteNotifications()
+                }
+            })
+        } else {
+            let notificationSettings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+            application.registerUserNotificationSettings(notificationSettings)
+        }
+
     }
 
+    func pushNotificationReceived (_ notification: [AnyHashable : Any], markAsRead: Bool) {
 
+        if let messageUUID: String = notification["uuid"] as? String {
+            if markAsRead {
+                let pushClient = StarflightClient(appId: PushNotificationConstants.starFlightClientID,
+                                                  clientSecret: PushNotificationConstants.starFlightClientSecret)
+                pushClient.openedMessage(token: deviceToken,
+                                         messageUuid: messageUUID) { [unowned self] (responseDict, response, error) in
+                                            if error != nil {
+                                                // TODO: handle error here
+                                            }
+                }
+            }
+        }
+    }
+
+    var deviceToken: String {
+        let prefs = UserDefaults.standard
+        if let token = prefs.string(forKey: "deviceToken") {
+            return token
+        } else {
+            return ""
+        }
+    }
+
+    func saveDeviceToken (_ deviceToken: String) {
+        let prefs = UserDefaults.standard
+        prefs.set(deviceToken, forKey: "deviceToken")
+        prefs.synchronize()
+    }
+
+    var clientUUID: String {
+        let prefs = UserDefaults.standard
+        if let uuid = prefs.string(forKey: "clientUUID") {
+            print(uuid)
+            return uuid
+        } else {
+            return ""
+        }
+    }
+
+    func saveClientUUID (_ clientUUID: String) {
+        let prefs = UserDefaults.standard
+        prefs.set(clientUUID, forKey: "clientUUID")
+        prefs.synchronize()
+    }
+
+    private func handleClientUUIDNotification(responseDictionary: [String : Any]?) {
+        if let clientUuid = responseDictionary?["clientUuid"] as? String {
+            saveClientUUID(clientUuid)
+        }
+    }
+
+    func pushNotificationHandler(notification: [AnyHashable : Any]) {
+        print("pushNotificationHandler")
+
+        // handle Push notificaiton here wh
+    }
 }
 
