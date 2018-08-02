@@ -3,7 +3,7 @@
 //  Starflight_swift
 //
 //  Created by ankushkushwaha on 07/31/2018.
-//  Copyright (c) 2018 ankushkushwaha. All rights reserved.
+//  Copyright (c) 2018 starcut. All rights reserved.
 //
 
 import UIKit
