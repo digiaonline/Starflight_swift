@@ -1,6 +1,6 @@
 # Starflight_swift
 
-[![CI Status](https://img.shields.io/travis/ankushkushwaha/Starflight_swift.svg?style=flat)](https://travis-ci.org/ankushkushwaha/Starflight_swift)
+[![CI Status](https://img.shields.io/travis/StarcutFinland/Starflight_swift.svg?style=flat)](https://travis-ci.org/StarcutFinland/Starflight_swift)
 [![Version](https://img.shields.io/cocoapods/v/Starflight_swift.svg?style=flat)](https://cocoapods.org/pods/Starflight_swift)
 [![License](https://img.shields.io/cocoapods/l/Starflight_swift.svg?style=flat)](https://cocoapods.org/pods/Starflight_swift)
 [![Platform](https://img.shields.io/cocoapods/p/Starflight_swift.svg?style=flat)](https://cocoapods.org/pods/Starflight_swift)

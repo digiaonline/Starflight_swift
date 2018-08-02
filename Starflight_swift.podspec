@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
 'A Library to include Starflight into iOS swift applications. This is developed in swift 4.2.'
 DESC
 
-  s.homepage         = 'https://github.com/ankushkushwaha/Starflight_swift'
+  s.homepage         = 'https://github.com/StarcutFinland/Starflight_swift'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'ankushkushwaha' => 'ankush.kushwaha@starcut.com' }
-  s.source           = { :git => 'https://github.com/ankushkushwaha/Starflight_swift.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/StarcutFinland/Starflight_swift.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
