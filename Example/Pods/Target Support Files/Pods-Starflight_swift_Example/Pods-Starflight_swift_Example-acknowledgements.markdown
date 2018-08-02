@@ -3,7 +3,7 @@ This application makes use of the following third party libraries:
 
 ## Starflight_swift
 
-Copyright (c) 2018 ankushkushwaha <ankush.kushwaha@starcut.com>
+Copyright (c) 2018 starcut
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

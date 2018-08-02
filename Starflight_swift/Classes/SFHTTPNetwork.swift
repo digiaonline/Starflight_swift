@@ -2,7 +2,7 @@
 //  SFHTTPNetwork.swift
 //
 //  Created by Ankush Kushwaha on 7/31/18.
-//  Copyright © 2018 Ankush Kushwaha. All rights reserved.
+//  Copyright © 2018 starcut. All rights reserved.
 //
 
 import Foundation
