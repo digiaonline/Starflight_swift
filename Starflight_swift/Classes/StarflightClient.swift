@@ -7,12 +7,12 @@
 
 import Foundation
 
-class StarflightClient {
+public class StarflightClient {
     
     private var appId: String?
     private var clientSecret: String?
     
-    init(appId: String, clientSecret: String) {
+    public init(appId: String, clientSecret: String) {
         
         self.appId = appId
         self.clientSecret = clientSecret
@@ -22,7 +22,7 @@ class StarflightClient {
         return "https://starflight.starcloud.us/push"
     }
     
-    func registerWithToken(token: String,
+   public func registerWithToken(token: String,
                            clientUUID: String?,
                            tags: [String]?,
                            timePreferences: String?,
@@ -55,7 +55,7 @@ class StarflightClient {
         
     }
     
-    func unregister(token: String,
+   public func unregister(token: String,
                     tags: [String]?,
                     completionHandler: ((Dictionary<String, Any>?, HTTPURLResponse?, Error?) -> Swift.Void)?) {
         
@@ -76,7 +76,7 @@ class StarflightClient {
         startHttpRequest(postString: postString, completionHandler: completionHandler)
     }
     
-    func openedMessage(token: String, messageUuid: String,
+   public func openedMessage(token: String, messageUuid: String,
                        completionHandler: ((Dictionary<String, Any>?, HTTPURLResponse?, Error?) -> Swift.Void)?) {
         
         guard let appId = self.appId, let clientSecret = self.clientSecret else {

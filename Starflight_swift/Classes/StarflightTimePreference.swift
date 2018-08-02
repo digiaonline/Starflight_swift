@@ -7,24 +7,32 @@
 
 import Foundation
 
-struct StarflightTimePreference {
-    
+public struct StarflightTimePreference {
+
     public struct DailyActiveTime {
         let startHour: String
         let startMinute: String
         let endHour: String
         let endMinute: String
-        
+
+        public init(startHour: String, startMinute: String, endHour: String, endMinute: String) {
+
+            self.startHour = startHour
+            self.startMinute = startMinute
+            self.endHour = endHour
+            self.endMinute = endMinute
+        }
+
         func convertedDictionary() -> [String : String] {
             var dict = [String: String]()
-            
+
             dict["start"] = "\(startHour):\(startMinute)"
             dict["end"] = "\(endHour):\(endMinute)"
-            
+
             return dict
         }
     }
-    
+
     var timeZone: String
     let monday: DailyActiveTime?
     let tuesday: DailyActiveTime?
@@ -33,8 +41,27 @@ struct StarflightTimePreference {
     let friday: DailyActiveTime?
     let saturday: DailyActiveTime?
     let sunday: DailyActiveTime?
-    
-    func timePrefJson() -> String {
+
+    public init(timeZone: String,
+        monday: DailyActiveTime,
+        tuesday: DailyActiveTime,
+        wednesday: DailyActiveTime,
+        thursday: DailyActiveTime,
+        friday: DailyActiveTime,
+        saturday: DailyActiveTime,
+        sunday: DailyActiveTime) {
+
+        self.timeZone = timeZone
+        self.monday = monday
+        self.tuesday = tuesday
+        self.wednesday = wednesday
+        self.thursday = thursday
+        self.friday = friday
+        self.saturday = saturday
+        self.sunday = sunday
+    }
+
+    public func timePrefJson() -> String {
         
         var dict = [String: Any]()
         
@@ -80,3 +107,5 @@ struct StarflightTimePreference {
         }
     }
 }
+
+
