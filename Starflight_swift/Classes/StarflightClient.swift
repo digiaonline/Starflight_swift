@@ -19,7 +19,7 @@ public class StarflightClient {
     }
     
     private func starflightUrl() -> String {
-        return "https://starflight.starcloud.us/push"
+        return "https://starflight.starcloudalias.link/push"
     }
     
    public func registerWithToken(token: String,
